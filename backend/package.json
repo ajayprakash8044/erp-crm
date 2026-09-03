@@ -4,14 +4,14 @@
   "description": "Mini ERP + CRM Operations Portal - Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
-    "prisma:seed": "tsx prisma/seed.ts",
-    "test": "vitest run"
-  },
+  "dev": "tsx watch src/server.ts",
+  "build": "prisma generate && tsc",
+  "start": "node dist/server.js",
+  "prisma:generate": "prisma generate",
+  "prisma:push": "prisma db push",
+  "prisma:seed": "tsx prisma/seed.ts",
+  "test": "vitest run"
+},
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
