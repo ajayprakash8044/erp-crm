@@ -1,0 +1,349 @@
+{
+  "info": {
+    "_postman_id": "mini-erp-crm-operations-api",
+    "name": "Mini ERP + CRM Operations Portal API",
+    "description": "Comprehensive REST API Collection for Mini ERP & CRM Operations Portal with RBAC, Customers, Products, Stock Movements, Sales Challans, and Invoices.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "challanId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Roles",
+      "item": [
+        {
+          "name": "POST Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('authToken', jsonData.data.token);",
+                  "    pm.environment.set('authToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@minierp.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "POST Login - Sales User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sales@minierp.com\",\n  \"password\": \"sales123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "POST Login - Warehouse User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"warehouse@minierp.com\",\n  \"password\": \"warehouse123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "POST Login - Accounts User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"accounts@minierp.com\",\n  \"password\": \"accounts123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "GET Current Profile (/me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "GET All Users (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/users", "host": ["{{baseUrl}}"], "path": ["auth", "users"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Customer CRM Module",
+      "item": [
+        {
+          "name": "GET Customers (Filtered & Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/customers?search=&status=ALL&customerType=ALL&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers"],
+              "query": [
+                { "key": "search", "value": "" },
+                { "key": "status", "value": "ALL" },
+                { "key": "customerType", "value": "ALL" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST Add Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sanjay Singhania\",\n  \"mobileNumber\": \"+91 98711 55667\",\n  \"email\": \"sanjay@singhaniadist.in\",\n  \"businessName\": \"Singhania Distribution Hub\",\n  \"gstNumber\": \"27AAACS9988D1Z5\",\n  \"customerType\": \"Distributor\",\n  \"address\": \"Plot 88, Wagle Estate, Thane West 400604\",\n  \"status\": \"Active\",\n  \"notes\": \"Direct distributor for western zone.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "GET Customer Details",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{customerId}}"] }
+          }
+        },
+        {
+          "name": "POST Add Follow-up Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Discussed delivery schedules and warehouse pallet dispatch for next week.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/{{customerId}}/notes", "host": ["{{baseUrl}}"], "path": ["customers", "{{customerId}}", "notes"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Products & Stock Inventory",
+      "item": [
+        {
+          "name": "GET All Products (with Low Stock Alert filter)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/products?category=ALL&lowStockOnly=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [
+                { "key": "category", "value": "ALL" },
+                { "key": "lowStockOnly", "value": "false" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laser Barcode Scanner 1D\",\n  \"sku\": \"LSR-101\",\n  \"category\": \"Electronics\",\n  \"unitPrice\": 2400,\n  \"currentStock\": 30,\n  \"minStockAlert\": 10,\n  \"location\": \"Bay B-12\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+          }
+        },
+        {
+          "name": "POST Stock Movement Adjustment (IN / OUT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 10,\n  \"movementType\": \"IN\",\n  \"reason\": \"Received supplier purchase order #PO-5541\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products/{{productId}}/stock-movement", "host": ["{{baseUrl}}"], "path": ["products", "{{productId}}", "stock-movement"] }
+          }
+        },
+        {
+          "name": "GET Stock Movement Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/products/movements?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["products", "movements"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Sales Challans Module",
+      "item": [
+        {
+          "name": "GET All Challans",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challans?status=ALL", "host": ["{{baseUrl}}"], "path": ["challans"] }
+          }
+        },
+        {
+          "name": "POST Create Challan (Draft or Confirmed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"status\": \"Confirmed\",\n  \"notes\": \"Priority dispatch for morning shift.\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/challans", "host": ["{{baseUrl}}"], "path": ["challans"] }
+          }
+        },
+        {
+          "name": "GET Challan Details (with Product Snapshots)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challans/{{challanId}}", "host": ["{{baseUrl}}"], "path": ["challans", "{{challanId}}"] }
+          }
+        },
+        {
+          "name": "PATCH Update Challan Status (Confirm Draft -> Stock Decrement)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Confirmed\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/challans/{{challanId}}/status", "host": ["{{baseUrl}}"], "path": ["challans", "{{challanId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Invoices & Billing",
+      "item": [
+        {
+          "name": "GET All Invoices",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/invoices", "host": ["{{baseUrl}}"], "path": ["invoices"] }
+          }
+        },
+        {
+          "name": "POST Generate Invoice from Confirmed Challan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taxRate\": 18.0,\n  \"notes\": \"Standard 30 days credit terms apply.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/from-challan/{{challanId}}", "host": ["{{baseUrl}}"], "path": ["invoices", "from-challan", "{{challanId}}"] }
+          }
+        },
+        {
+          "name": "PATCH Update Invoice Payment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Paid\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/{{invoiceId}}/status", "host": ["{{baseUrl}}"], "path": ["invoices", "{{invoiceId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Dashboard KPIs",
+      "item": [
+        {
+          "name": "GET Dashboard KPI Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["dashboard", "stats"] }
+          }
+        }
+      ]
+    }
+  ]
+}
